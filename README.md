@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+# Projeto Boi Saúde
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Como rodar
+1. Clone ou baixe os dois repositórios: 
+   - **client** (Front-End)
+   - **API** (Back-End)
 
-## Available Scripts
+2. Coloque ambos os repositórios em uma mesma pasta. 
 
-In the project directory, you can run:
+3. Primeiramente, inicie o projeto da API. 
+   - Abra o projeto da API
+     Inicie o projeto da API
 
-### `npm start`
+4. Após a API estar em execução, inicie o Front-End. 
+   - Abra o terminal na pasta do front-end (client) e execute o comando:
+     npm start
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+5. Ambos os projetos devem agora estar rodando e você pode acessar a aplicação.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Descrição
 
-### `npm test`
+Projeto desenvolvido para o Desafio da Boi Saúde, com o objetivo de criar uma micro API e integrá-la com o front-end. A aplicação utiliza uma arquitetura full stack, com uma API RESTful construída em C# utilizando ASP.NET Core Web API e um front-end interativo desenvolvido em React com o framework Ant Design.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tecnologias Utilizadas
+* **Front-end:**
+    * React
+    * Ant Design
 
-### `npm run build`
+* **Back-end:**
+    * C#
+    * ASP.NET Core Web API
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **Banco-de-Dados**
+    * SQL-Server
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Pré-requisitos
+* C# com Dotnet Web API
+* Node.js
+* Microsoft.EntityFrameworkCore 
+* Microsoft.EntityFrameWorkCore.Design 
+* Microsoft.EntityFrameworkCore.InMemory
+* Microsoft.EntityFrameworkCore.SqlServer
+* Microsoft.EntityFrameworkCore.Tools
+* Swashbuckle.AspNetCore
+* React 
+* Ant-Design

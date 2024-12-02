@@ -1,0 +1,36 @@
+.cabecalho {
+  background-color: #4CAF50;
+  text-align: center;
+  padding: 10px;
+  height: 18vh;
+}
+
+.cabecalho .titulo {
+  color: #FFFFFF;
+}
+
+.cabecalho .texto {
+  color: #FFFFFF;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .cabecalho {
+    height: 25vh;
+  }
+
+  .cabecalho .texto {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 2000px) {
+
+  .cabecalho .titulo
+  {
+    font-size: 54px;
+  }
+  .cabecalho .texto {
+    font-size: 32px;
+  }
+}

@@ -1,4 +1,4 @@
-# Projeto Boi Saúde
+# Primeiro Fullstack
 
 ## Como rodar
 1. Clone ou baixe os dois repositórios: 
@@ -19,7 +19,8 @@
 
 ## Descrição
 
-Projeto desenvolvido para o Desafio da Boi Saúde, com o objetivo de criar uma micro API e integrá-la com o front-end. A aplicação utiliza uma arquitetura full stack, com uma API RESTful construída em C# utilizando ASP.NET Core Web API e um front-end interativo desenvolvido em React com o framework Ant Design.
+Primeiro projeto fullstack que eu desenvolvi, com o objetivo de criar uma micro API e integrá-la com o front-end. 
+A aplicação utiliza uma arquitetura full stack, com uma API RESTful construída em C# utilizando ASP.NET Core Web API e um front-end interativo desenvolvido em React com o framework Ant Design.
 
 ## Tecnologias Utilizadas
 * **Front-end:**

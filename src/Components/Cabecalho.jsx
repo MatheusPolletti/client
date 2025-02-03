@@ -12,7 +12,7 @@ const Cabecalho = () => {
           Aba de Produtos
         </Title>
         <Text className="texto">
-          Acesso aos Produtos da Empresa
+          Cadastro de Produtos
         </Text>
       </Typography>
     </Layout.Header>

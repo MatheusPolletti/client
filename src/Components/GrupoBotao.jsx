@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Select } from 'antd';
 import { Button, Row, Col, Modal, Input, Form, List, message, Space } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -20,7 +21,7 @@ const Botoes_Completos = () => {
             message.error(error);
         }
     };
-
+    
     const fetchProdutoPorId = async (id) => {
         try {
             const response = await fetch(`${baseURL}/id/${id}`);
@@ -28,13 +29,14 @@ const Botoes_Completos = () => {
                 throw new Error('Produto não encontrado');
             }
             const data = await response.json();
+            console.log(data.dadosProdutos.disponível);
             return data.dadosProdutos;
         } catch (error) {
             console.error(error);
             return null;
         }
     };
-
+    
     const fetchProdutoPorNome = async (nome) => {
         try {
             const response = await fetch(`${baseURL}/nome/${nome}`);
@@ -48,7 +50,7 @@ const Botoes_Completos = () => {
             return null;
         }
     };
-
+    
     const fetchDeletarProdutoPorId = async (id) => {
         try {
             const response = await fetch(`${baseURL}/idDeletar/${id}`, {
@@ -69,8 +71,8 @@ const Botoes_Completos = () => {
             console.error(error.message);
             throw error;
         }
-    };    
-
+    };
+    
     const fetchDeletarProdutoPorNome = async (nome) => {
         try {
             const response = await fetch(`${baseURL}/nomeDeletar/${nome}`, {
@@ -98,231 +100,260 @@ const Botoes_Completos = () => {
         setIsModalOpen(true);
         if (action === 'mostrarTodos') fetchTodosProdutos();
     };
-
+    
     const handleCancel = () => {
         form.resetFields();
         setIsModalOpen(false);
         setSelectedProduct(null);
     };
+    
+    const [sortedProducts, setSortedProducts] = useState(products);
+            const [sortOrder, setSortOrder] = useState('asc'); 
+            
+            const handleSort = (order) => {
+                const sorted = [...products].sort((a, b) => {
+                    if (order === 'asc') {
+                        return a.preco - b.preco;
+                    } else {
+                        return b.preco - a.preco;
+                    }
+                });
+                setSortedProducts(sorted);
+                setSortOrder(order);
+            };
 
     const renderModalContent = () => {
         switch (currentAction) {
-            case 'mostrarTodos':
-                return (
+        case 'mostrarTodos':
+            return (
+                <div>
+                    <Button
+                        onClick={() => handleSort('asc')}
+                        type="primary"
+                        size="large"
+                        style={{ marginBottom: '10px' }}
+                    >
+                        Ordenar por Preço: Menor para Maior
+                    </Button>
+                    <Button
+                        onClick={() => handleSort('desc')}
+                        type="primary"
+                        size="large"
+                    >
+                        Ordenar por Preço: Maior para Menor
+                    </Button>
+
                     <List
-                        dataSource={products}
+                        dataSource={sortedProducts}
                         renderItem={(item) => (
                             <List.Item>
-                                <strong>Id: {item.id} - {item.nome}</strong>: Preco de Custo/Venda
-                                R${item.precoCusto} - {item.precoVenda} | Quantidade: {item.quantidade}
+                                <strong>Id: {item.id} - {item.nome}</strong>: {item.descricao} | Preço: R${item.preco} | Disponível: {item.disponível === 1 ? 'Sim' : 'Não'}
                             </List.Item>
                         )}
                     />
-                );
-                case 'procurarPorId':
-                    return (
-                        <Form form={form} layout="vertical">
-                            <Form.Item
-                                label="Procura por Id"
-                                name="idProduto"
-                                rules={[{ required: true, message: 'Campo obrigatório.' }]}
-                            >
-                                <Input placeholder="Insira o id do produto" />
-                            </Form.Item>
-                            {selectedProduct && (
-                                <div style={{ marginTop: '20px' }}>
-                                    <strong>Produto encontrado:</strong>
-                                    <pre>
-                                        ID: {selectedProduct.id}
-                                        <br />
-                                        Nome: {selectedProduct.nome}
-                                        <br />
-                                        Preço de Custo: R${selectedProduct.precoCusto}
-                                        <br />
-                                        Preço de Venda: R${selectedProduct.precoVenda}
-                                        <br />
-                                        Quantidade: {selectedProduct.quantidade}
-                                    </pre>
-                                </div>
-                            )}
-                            <Button
-                                type="primary"
-                                onClick={async () => {
-                                    try {
-                                        const values = await form.validateFields();
-                                        const idProduto = values.idProduto;
+                </div>
+            );
 
-                                        const retorno = await fetchProdutoPorId(idProduto);
-
-                                        if (retorno) {
-                                            setSelectedProduct({
-                                                id: retorno.id,
-                                                nome: retorno.nome,
-                                                precoCusto: retorno.precoCusto,
-                                                precoVenda: retorno.precoVenda,
-                                                quantidade: retorno.quantidade,
-                                            });
-                                            message.success('Produto encontrado.');
-                                        } else {
-                                            setSelectedProduct(null);
-                                            message.warning('Produto não encontrado.');
-                                        }
-                                    } catch (error) {
-                                        console.error('Erro', error);
-                                        message.error('Erro ao buscar o produto. Tente novamente.');
+            case 'procurarPorId':
+                return (
+                    <Form form={form} layout="vertical">
+                        <Form.Item
+                            label="Procura por Id"
+                            name="idProduto"
+                            rules={[{ required: true, message: 'Campo obrigatório.' }]}
+                        >
+                            <Input placeholder="Insira o id do produto" />
+                        </Form.Item>
+                        {selectedProduct && (
+                            <div style={{ marginTop: '20px' }}>
+                                <strong>Produto encontrado:</strong>
+                                <pre>
+                                    ID: {selectedProduct.id}
+                                    <br />
+                                    Nome: {selectedProduct.nome}
+                                    <br />
+                                    Descrição: {selectedProduct.descricao}
+                                    <br />
+                                    Preço: R${selectedProduct.preco}
+                                    <br />
+                                    Disponivel: {selectedProduct.disponivel === 1 ? 'Sim' : 'Não'}
+                                </pre>
+                            </div>
+                        )}
+                        <Button
+                            type="primary"
+                            onClick={async () => {
+                                try {
+                                    const values = await form.validateFields();
+                                    const idProduto = values.idProduto;
+                                    const retorno = await fetchProdutoPorId(idProduto);
+                                    console.log(retorno);
+    
+                                    if (retorno) {
+                                        setSelectedProduct({
+                                            id: retorno.id,
+                                            nome: retorno.nome,
+                                            descricao: retorno.descricao,
+                                            preco: retorno.preco,
+                                            disponivel: retorno.disponível,
+                                        });
+                                        message.success('Produto encontrado.');
+                                    } else {
+                                        setSelectedProduct(null);
+                                        message.warning('Produto não encontrado.');
                                     }
-                                }}
-                            >
-                                Pesquisar
-                            </Button>
-                            {!selectedProduct && (
-                                <p style={{ marginTop: '20px' }}>
-                                    Produto não encontrado ou ainda não pesquisado.
-                                </p>
-                            )}
-                        </Form>
-                    );
+                                } catch (error) {
+                                    console.error('Erro', error);
+                                    message.error('Erro ao buscar o produto. Tente novamente.');
+                                }
+                            }}
+                        >
+                            Pesquisar
+                        </Button>
+                        {!selectedProduct && (
+                            <p style={{ marginTop: '20px' }}>
+                                Produto não encontrado ou ainda não pesquisado.
+                            </p>
+                        )}
+                    </Form>
+                );
             case 'procurarPorNome':
                 return (
-                        <Form form={form} layout="vertical">
-                            <Form.Item
-                                label="Procura por Nome"
-                                name="nomeProduto"
-                                rules={[{ required: true, message: 'Campo obrigatório.' }]}
-                            >
-                                <Input placeholder="Insira o nome do produto" />
-                            </Form.Item>
-                            {selectedProduct && (
-                                <div style={{ marginTop: '20px' }}>
-                                    <strong>Produto encontrado:</strong>
-                                    <pre>
-                                        ID: {selectedProduct.id}
-                                        <br />
-                                        Nome: {selectedProduct.nome}
-                                        <br />
-                                        Preço de Custo: R${selectedProduct.precoCusto}
-                                        <br />
-                                        Preço de Venda: R${selectedProduct.precoVenda}
-                                        <br />
-                                        Quantidade: {selectedProduct.quantidade}
-                                    </pre>
-                                </div>
-                            )}
-                            <Button
-                                type="primary"
-                                onClick={async () => {
-                                    try {
-                                        const values = await form.validateFields();
-                                        const nomeProduto = values.nomeProduto;
-
-                                        const retorno = await fetchProdutoPorNome(nomeProduto);
-
-                                        if (retorno) {
-                                            setSelectedProduct({
-                                                id: retorno.id,
-                                                nome: retorno.nome,
-                                                precoCusto: retorno.precoCusto,
-                                                precoVenda: retorno.precoVenda,
-                                                quantidade: retorno.quantidade,
-                                            });
-                                            message.success('Produto encontrado.');
-                                        } else {
-                                            setSelectedProduct(null);
-                                            message.warning('Produto não encontrado.');
-                                        }
-                                    } catch (error) {
-                                        console.error('Erro', error);
-                                        message.error('Erro para achar o produto. Tente novamente.');
-                                    }
-                                }}
-                            >
-                                Pesquisar
-                            </Button>
-                            {!selectedProduct && (
-                                <p style={{ marginTop: '20px' }}>
-                                    Produto não encontrado ou ainda não pesquisado.
-                                </p>
-                            )}
-                        </Form>
-                    );
-                    case 'adicionar':
-                        return (
-                            <Form
-                                form={form}
-                                layout="vertical"
-                                onFinish={async (values) => {
-                                    try {
-                                        const response = await fetch(`${baseURL}`, {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({
-                                                nome: values.NomeProduto,
-                                                precoCusto: parseFloat(values.PrecoCusto),
-                                                precoVenda: parseFloat(values.PrecoVenda),
-                                                quantidade: parseInt(values.quantiaProduto, 10),
-                                            }),
+                    <Form form={form} layout="vertical">
+                        <Form.Item
+                            label="Procura por Nome"
+                            name="nomeProduto"
+                            rules={[{ required: true, message: 'Campo obrigatório.' }]}
+                        >
+                            <Input placeholder="Insira o nome do produto" />
+                        </Form.Item>
+                        {selectedProduct && (
+                            <div style={{ marginTop: '20px' }}>
+                                <strong>Produto encontrado:</strong>
+                                <pre>
+                                    ID: {selectedProduct.id}
+                                    <br />
+                                    Nome: {selectedProduct.nome}
+                                    <br />
+                                    Descrição: {selectedProduct.descricao}
+                                    <br />
+                                    Preço: R${selectedProduct.preco}
+                                    <br />
+                                    Disponivel: {selectedProduct.disponivel === 1? 'Sim' : 'Não'}
+                                </pre>
+                            </div>
+                        )}
+                        <Button
+                            type="primary"
+                            onClick={async () => {
+                                try {
+                                    const values = await form.validateFields();
+                                    const nomeProduto = values.nomeProduto;
+                                    const retorno = await fetchProdutoPorNome(nomeProduto);
+    
+                                    if (retorno) {
+                                        setSelectedProduct({
+                                            id: retorno.id,
+                                            nome: retorno.nome,
+                                            descricao: retorno.descricao,
+                                            preco: retorno.preco,
+                                            disponivel: retorno.disponível,
                                         });
-                    
-                                        if (response.ok) {
-                                            message.success('Produto adicionado com sucesso.');
-                                            form.resetFields();
-                                        } else {
-                                            const errorData = await response.json();
-                                            message.error(`Erro ao adicionar produto: ${errorData.message}`);
-                                        }
-                                    } catch (error) {
-                                        console.error('Erro', error);
-                                        message.error('Erro ao adicionar produto. Tente novamente.');
+                                        message.success('Produto encontrado.');
+                                    } else {
+                                        setSelectedProduct(null);
+                                        message.warning('Produto não encontrado.');
                                     }
-                                }}
+                                } catch (error) {
+                                    console.error('Erro', error);
+                                    message.error('Erro ao procurar o produto. Tente novamente.');
+                                }
+                            }}
+                        >
+                            Pesquisar
+                        </Button>
+                        {!selectedProduct && (
+                            <p style={{ marginTop: '20px' }}>
+                                Produto não encontrado ou ainda não pesquisado.
+                            </p>
+                        )}
+                    </Form>
+                );
+                case 'adicionar':
+                    return (
+                        <Form
+                            form={form}
+                            layout="vertical"
+                            onFinish={async (values) => {
+                                try {
+                                    const response = await fetch(`${baseURL}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            nome: values.NomeProduto,
+                                            descricao: values.DescricaoProduto,
+                                            preco: parseFloat(values.PrecoProduto),
+                                            disponível: values.DisponivelProduto === 'sim' ? 1 : 0,
+                                        }),
+                                    });
+                
+                                    if (response.ok) {
+                                        message.success('Produto adicionado com sucesso.');
+                                        form.resetFields();
+                                    } else {
+                                        const errorData = await response.json();
+                                        message.error(`Erro ao adicionar produto: ${errorData.message}`);
+                                    }
+                                } catch (error) {
+                                    console.error('Erro', error);
+                                    message.error('Erro ao adicionar produto. Tente novamente.');
+                                }
+                            }}
+                        >
+                            <Form.Item
+                                label="Nome do Produto"
+                                name="NomeProduto"
+                                rules={[{ required: true, message: 'Por favor, insira o nome do produto.' }]}
                             >
-                                <Form.Item
-                                    label="Nome do Produto"
-                                    name="NomeProduto"
-                                    rules={[{ required: true, message: 'Por favor, insira o nome do produto.' }]}
-                                >
-                                    <Input placeholder="Insira o nome do produto." />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Preço de Custo"
-                                    name="PrecoCusto"
-                                    rules={[
-                                        { required: true, message: 'Por favor, insira o preço de custo do produto.' },
-                                        { pattern: /^\d+(\.\d{1,2})?$/, message: 'Por favor, insira um valor válido.' },
-                                    ]}
-                                >
-                                    <Input placeholder="Insira o preço de compra do produto." />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Preço de Venda"
-                                    name="PrecoVenda"
-                                    rules={[
-                                        { required: true, message: 'Por favor, insira o preço de venda do produto.' },
-                                        { pattern: /^\d+(\.\d{1,2})?$/, message: 'Por favor, insira um valor válido.' },
-                                    ]}
-                                >
-                                    <Input placeholder="Insira o preço de venda do produto." />
-                                </Form.Item>
-                                <Form.Item
-                                    label="Quantidade"
-                                    name="quantiaProduto"
-                                    rules={[
-                                        { required: true, message: 'Por favor, insira a quantidade do produto.' },
-                                        { pattern: /^\d+$/, message: 'A quantidade deve ser um número inteiro.' },
-                                    ]}
-                                >
-                                    <Input placeholder="Insira a quantidade do produto." />
-                                </Form.Item>
-                    
-                                <Form.Item>
-                                    <Button type="primary" htmlType="submit">
-                                        Adicionar Produto
-                                    </Button>
-                                </Form.Item>
-                            </Form>
-                        );                    
+                                <Input placeholder="Insira o nome do produto." />
+                            </Form.Item>
+                            <Form.Item
+                                label="Descrição do Produto"
+                                name="DescricaoProduto"
+                                rules={[{ required: true, message: 'Por favor, insira a descrição do produto.' }]}
+                            >
+                                <Input placeholder="Insira a descrição do produto." />
+                            </Form.Item>
+                            <Form.Item
+                                label="Preço do Produto"
+                                name="PrecoProduto"
+                                rules={[
+                                    { required: true, message: 'Por favor, insira o preço do produto.' },
+                                    { pattern: /^\d+(\.\d{1,2})?$/, message: 'Por favor, insira um valor válido.' },
+                                ]}
+                            >
+                                <Input placeholder="Insira o preço do produto." />
+                            </Form.Item>
+                            <Form.Item
+                                label="Disponível"
+                                name="DisponivelProduto"
+                                rules={[{ required: true, message: 'Por favor, selecione se o produto está disponível.' }]}
+                            >
+                                <Select>
+                                    <Select.Option value="sim">Sim</Select.Option>
+                                    <Select.Option value="nao">Não</Select.Option>
+                                </Select>
+                            </Form.Item>
+                
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit">
+                                    Adicionar Produto
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    );                
             case 'atualizarProdutoId':
                 return (
                     <Form
@@ -338,12 +369,12 @@ const Botoes_Completos = () => {
                                     body: JSON.stringify({
                                         id: values.idProduto,
                                         nome: values.NomeProduto,
-                                        precoCusto: parseFloat(values.PrecoCusto),
-                                        precoVenda: parseFloat(values.PrecoVenda),
-                                        quantidade: parseInt(values.quantiaProduto, 10),
+                                        descricao: values.DescricaoProduto,
+                                        preco: parseFloat(values.PrecoProduto),
+                                        disponível: values.DisponivelProduto === 'sim' ? 1 : 0,
                                     }),
                                 });
-            
+    
                                 if (response.ok) {
                                     message.success('Produto atualizado com sucesso.');
                                     form.resetFields();
@@ -372,79 +403,70 @@ const Botoes_Completos = () => {
                             <Input placeholder="Insira o nome do produto." />
                         </Form.Item>
                         <Form.Item
-                            label="Preço de Custo"
-                            name="PrecoCusto"
+                            label="Descrição do Produto"
+                            name="DescricaoProduto"
+                            rules={[{ required: true, message: 'Por favor, insira a descrição do produto.' }]}
+                        >
+                            <Input placeholder="Insira a descrição do produto." />
+                        </Form.Item>
+                        <Form.Item
+                            label="Preço do Produto"
+                            name="PrecoProduto"
                             rules={[
-                                { required: true, message: 'Por favor, insira o preço de custo do produto.' },
+                                { required: true, message: 'Por favor, insira o preço do produto.' },
                                 { pattern: /^\d+(\.\d{1,2})?$/, message: 'Por favor, insira um valor válido.' },
                             ]}
                         >
-                            <Input placeholder="Insira o preço de compra do produto." />
+                            <Input placeholder="Insira o preço do produto." />
                         </Form.Item>
                         <Form.Item
-                            label="Preço de Venda"
-                            name="PrecoVenda"
-                            rules={[
-                                { required: true, message: 'Por favor, insira o preço de venda do produto.' },
-                                { pattern: /^\d+(\.\d{1,2})?$/, message: 'Por favor, insira um valor válido.' },
-                            ]}
+                            label="Disponível"
+                            name="DisponivelProduto"
+                            rules={[{ required: true, message: 'Por favor, selecione se o produto está disponível.' }]}
                         >
-                            <Input placeholder="Insira o preço de venda do produto." />
+                            <Select>
+                                <Select.Option value="sim">Sim</Select.Option>
+                                <Select.Option value="nao">Não</Select.Option>
+                            </Select>
                         </Form.Item>
-                        <Form.Item
-                            label="Quantidade"
-                            name="quantiaProduto"
-                            rules={[
-                                { required: true, message: 'Por favor, insira a quantidade do produto.' },
-                                { pattern: /^\d+$/, message: 'A quantidade deve ser um número inteiro.' },
-                            ]}
-                        >
-                            <Input placeholder="Insira a quantidade do produto." />
-                        </Form.Item>
-            
+    
                         <Form.Item>
                             <Button type="primary" htmlType="submit">
                                 Atualizar Produto
                             </Button>
                         </Form.Item>
                     </Form>
-                );                  
-                case 'deletarPorId':
-                    return (
-                        <Form
-                            form={form}
-                            layout="vertical"
-                            onFinish={async (values) => {
-                                try {
-                                    // Obtém o ID do produto do formulário
-                                    const idProdutoDeletar = values.idProdutoDeletar;
-                
-                                    // Chama a função para deletar o produto
-                                    const messageResult = await fetchDeletarProdutoPorId(idProdutoDeletar);
-                
-                                    // Exibe mensagem de sucesso e reseta o formulário
-                                    message.success(messageResult);
-                                    form.resetFields();
-                                } catch (error) {
-                                    // Exibe mensagem de erro
-                                    message.error('Erro ao deletar produto: ' + error.message);
-                                }
-                            }}
+                );
+            case 'deletarPorId':
+                return (
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={async (values) => {
+                            try {
+                                const idProdutoDeletar = values.idProdutoDeletar;
+                                const messageResult = await fetchDeletarProdutoPorId(idProdutoDeletar);
+                                message.success(messageResult);
+                                form.resetFields();
+                            } catch (error) {
+                                message.error('Erro ao deletar produto: ' + error.message);
+                            }
+                        }}
+                    >
+                        <Form.Item
+                            label="Id do Produto"
+                            name="idProdutoDeletar"
+                            rules={[{ required: true, message: 'Por favor, insira o id do produto.' }]}
                         >
-                            <Form.Item
-                                label="Id do Produto"
-                                name="idProdutoDeletar"
-                                rules={[{ required: true, message: 'Por favor, insira o id do produto.' }]}
-                            >
-                                <Input placeholder="Insira o id do produto." />
-                            </Form.Item>
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit">
-                                    Deletar Produto
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    );                
+                            <Input placeholder="Insira o id do produto." />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                Deletar Produto
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                );
             case 'deletarPorNome':
                 return (
                     <Form
@@ -453,9 +475,7 @@ const Botoes_Completos = () => {
                         onFinish={async (values) => {
                             try {
                                 const nomeProdutoDeletar = values.nomeProdutoDeletar;
-            
                                 const messageResult = await fetchDeletarProdutoPorNome(nomeProdutoDeletar);
-            
                                 message.success(messageResult);
                                 form.resetFields();
                             } catch (error) {
@@ -476,9 +496,9 @@ const Botoes_Completos = () => {
                             </Button>
                         </Form.Item>
                     </Form>
-                );             
+                );
             default:
-                return <p>Selecione uma ação válida.</p>;
+                return null;
         }
     };
 
